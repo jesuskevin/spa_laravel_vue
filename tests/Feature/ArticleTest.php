@@ -9,6 +9,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Article;
 use App\Models\Comment;
+use Laravel\Sanctum\Sanctum;
 use Symfony\Component\HttpFoundation\Response;
 
 class ArticleTest extends TestCase
@@ -33,6 +34,8 @@ class ArticleTest extends TestCase
     public function it_shows_a_collection_of_articles()
     {
         $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
         $article = Article::factory()->create();
 
         $this->json('GET', '/api/articles')
@@ -58,6 +61,8 @@ class ArticleTest extends TestCase
     public function it_shows_an_article()
     {
         $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
         $article = Article::factory()->create();
 
         $this->json('GET', "/api/articles/{$article->slug}")
@@ -80,6 +85,8 @@ class ArticleTest extends TestCase
     {
         $user = User::factory()->create();
 
+        Sanctum::actingAs($user);
+
         $data = [
             'title' => 'This is the title',
             'thumbnail' => 'https://picsum.photos/250/200',
@@ -93,8 +100,14 @@ class ArticleTest extends TestCase
         $this->assertEquals(1, Article::count());
     }
 
+    /**
+     * @test
+     */
     public function it_deletes_an_article()
     {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
         $article = Article::factory()->create();
 
         $this->json('DELETE', "/api/articles/{$article->slug}")
