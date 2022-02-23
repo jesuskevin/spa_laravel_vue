@@ -115,4 +115,19 @@ class ArticleTest extends TestCase
 
         $this->assertNull(Article::find($article->id));
     }
+
+    /**
+     * @test
+     */
+    public function it_cannot_deletes_an_article_that_dont_belongs_to_the_user()
+    {
+        $user = User::factory()->create();
+        $user1 = User::factory()->create();
+        $article = Article::factory()->for($user)->create();
+
+        Sanctum::actingAs($user1);
+
+        $this->json('DELETE', "/api/articles/{$article->slug}")
+            ->assertStatus(Response::HTTP_FORBIDDEN);
+    }
 }

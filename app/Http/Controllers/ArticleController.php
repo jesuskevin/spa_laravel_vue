@@ -19,6 +19,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Article::class);
         return ArticleResource::collection(Article::paginate(5));
     }
 
@@ -30,6 +31,7 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Article::class);
         $request->validate([
             'title' => 'required',
             'content' => 'required',
@@ -50,6 +52,7 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
+        $this->authorize('view', $article);
         ArticleResource::withoutWrapping();
         return (new ArticleResource($article))->response()->setStatusCode(Response::HTTP_OK);
     }
@@ -63,6 +66,7 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
+        $this->authorize('update', $article);
         $request->validate([
             'title' => 'required',
             'content' => 'required',
@@ -81,6 +85,7 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
+        $this->authorize('delete', $article);
         $article->delete();
 
         return response([], Response::HTTP_NO_CONTENT);
